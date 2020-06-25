@@ -1,0 +1,31 @@
+/* Sections */
+.main--description {
+  max-width: 600px;
+  margin-right: auto;
+}
+
+/* Animations */
+.animate {
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+.animate--fadeInLeft {
+  -webkit-animation-name: fadeInLeft;
+  animation-name: fadeInLeft;
+}
+
+/* Keyframes */
+@keyframes fadeInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-80px);
+  }
+  
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
