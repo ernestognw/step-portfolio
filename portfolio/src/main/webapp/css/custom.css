@@ -4,10 +4,23 @@
   margin-right: auto;
 }
 
+.repositories--list {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
 /* Animations */
-.animate {
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
+.animate-1 {
+  -webkit-animation-duration: 0.8s;
+  animation-duration: 0.8s;
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+}
+
+.animate-2 {
+  -webkit-animation-duration: 1.4s;
+  animation-duration: 1.4s;
   -webkit-animation-fill-mode: both;
   animation-fill-mode: both;
 }
