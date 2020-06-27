@@ -1,0 +1,31 @@
+.animate-1 {
+  -webkit-animation-duration: 0.8s;
+  -webkit-animation-fill-mode: both;
+  animation-duration: 0.8s;
+  animation-fill-mode: both;
+}
+
+.animate-2 {
+  -webkit-animation-duration: 1.4s;
+  -webkit-animation-fill-mode: both;
+  animation-duration: 1.4s;
+  animation-fill-mode: both;
+}
+
+.animate--fade-in-left {
+  -webkit-animation-name: fade-in-left;
+  animation-name: fade-in-left;
+}
+
+/* Keyframes */
+@keyframes fade-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-80px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

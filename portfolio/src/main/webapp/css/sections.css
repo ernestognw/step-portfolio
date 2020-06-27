@@ -1,0 +1,43 @@
+.main--description {
+  margin-right: auto;
+  max-width: 600px;
+}
+
+.main--skills {
+  margin-right: auto;
+  max-width: 600px;
+}
+
+.main--skills-block {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.repositories--list {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.videos--list {
+  display: grid;
+  grid-gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+}
+
+.work--list {
+  margin-right: auto;
+  max-width: 800px;
+}
+
+.work--list-avatar {
+  border: 2px solid #3298dc;
+  margin-right: 10px;
+  min-height: 64px;
+  min-width: 64px;
+}
+
+.work--list-element {
+  display: flex;
+  margin: 30px 0px;
+}
