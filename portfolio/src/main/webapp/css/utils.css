@@ -1,7 +1,7 @@
 .ellipsis {
   -webkit-box-orient: vertical;
-  display: -webkit-box;
   display: block;
+  display: -webkit-box; /* Should be after block or it break text ellipsis */
   line-height: 1.4;
   margin: 0 auto;
   overflow: hidden;
