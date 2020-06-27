@@ -17,6 +17,16 @@
   margin-right: auto;
 }
 
+.main--skills {
+  max-width: 600px;
+  margin-right: auto;
+}
+
+.main--skills-block {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .repositories--list {
   display: grid;
   grid-gap: 20px;
