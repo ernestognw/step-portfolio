@@ -3,8 +3,6 @@ import { medium } from "./client.js";
 const updatePosts = async () => {
   const { items: posts } = await medium.get("/feed/@ernestognw");
 
-  console.log(posts);
-
   const container = document.getElementById("blog");
 
   for (let post of posts) {
