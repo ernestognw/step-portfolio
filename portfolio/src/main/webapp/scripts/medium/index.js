@@ -15,7 +15,7 @@ const updatePosts = async () => {
     if (thumbnail.includes("cdn")) {
       container.insertAdjacentHTML(
         "beforeend",
-        `<a href="${link}" rel="noopener noreferrer" target="_blank">
+        `<a class="card" href="${link}" rel="noopener noreferrer" target="_blank">
           <div class="card-image">
             <figure class="image is-16by9">
               <img class="" src="${thumbnail}" alt=${title}>
@@ -25,9 +25,6 @@ const updatePosts = async () => {
             <div class="media">
               <div class="media-content">
                 <p class="title mb-0 is-4">${title}</p>
-                <a class="is-6" href="https://medium.com/@ernestognw" rel="noopener noreferrer" target="_blank">
-                  @ernestognw
-                </a>
               </div>
             </div>
             <time class="mt-3 mt-auto">${moment(pubDate).fromNow()}</time> 
