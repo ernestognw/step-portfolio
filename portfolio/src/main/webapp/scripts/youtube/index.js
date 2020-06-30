@@ -1,21 +1,21 @@
-import { youtube } from "./client.js";
+import { youtube } from './client.js';
 
 const updateVideos = async () => {
   const myVideos = [
-    "x4bX0FueaLs",
-    "9JBSGKpa5g4",
-    "OdsGTDlUs1s",
-    "jNdXrbFm6nQ",
-    "ldWFCOdWkwk",
-    "iX3X7yFHNjE",
-    "RaOqQZQprks"
+    'x4bX0FueaLs',
+    '9JBSGKpa5g4',
+    'OdsGTDlUs1s',
+    'jNdXrbFm6nQ',
+    'ldWFCOdWkwk',
+    'iX3X7yFHNjE',
+    'RaOqQZQprks'
   ];
 
   const { items: videos } = await youtube.get(
     `/videos?part=id%2C+snippet&id=${myVideos.toString()}`
   );
 
-  const container = document.getElementById("videos");
+  const container = document.getElementById('videos');
 
   for (let video of videos) {
     const {
@@ -24,7 +24,7 @@ const updateVideos = async () => {
     } = video;
 
     container.insertAdjacentHTML(
-      "beforeend",
+      'beforeend',
       `<div class="card">
         <div class="card-image">
           <figure class="image is-4by3">

@@ -1,14 +1,14 @@
-import { github } from "./client.js";
+import { github } from './client.js';
 
 const updateRepos = async (page, per_page) => {
   window.loadMoreReposButton.disabled = true;
-  window.loadMoreReposButton.classList.add("is-loading");
+  window.loadMoreReposButton.classList.add('is-loading');
 
   const repos = await github.get(
     `/users/ernestognw/repos?&sort=updated&page=${page}&per_page=${per_page}`
   );
 
-  const container = document.getElementById("repositories");
+  const container = document.getElementById('repositories');
 
   for (let repo of repos) {
     const {
@@ -21,7 +21,7 @@ const updateRepos = async (page, per_page) => {
     } = repo;
 
     container.insertAdjacentHTML(
-      "beforeend",
+      'beforeend',
       `<a class="card" href="https://github.com/${full_name}" rel="noopener noreferrer" target="_blank">
         <div class="card-content">
           <div class="media">
@@ -41,7 +41,7 @@ const updateRepos = async (page, per_page) => {
     );
 
     window.loadMoreReposButton.disabled = false;
-    window.loadMoreReposButton.classList.remove("is-loading");
+    window.loadMoreReposButton.classList.remove('is-loading');
   }
 };
 
