@@ -1,5 +1,5 @@
 const baseURL =
-  "https://api.rss2json.com/v1/api.json?rss_url=https://medium.com";
+  'https://api.rss2json.com/v1/api.json?rss_url=https://medium.com';
 
 const medium = {
   get: async path => {
@@ -7,7 +7,7 @@ const medium = {
 
     return data.json();
   }
-  // TO DO: Add another methods to medium
+  // TODO(ernestognw): Add POST method for medium
 };
 
 export { medium };
