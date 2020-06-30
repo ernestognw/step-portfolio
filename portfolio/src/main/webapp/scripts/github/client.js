@@ -10,7 +10,7 @@ const github = {
 
     return data.json();
   }
-  // TO DO: Add another methods to github
+  // TODO(ernestognw): Add POST method for github
 };
 
 export { github };

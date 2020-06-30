@@ -7,7 +7,7 @@ const youtube = {
 
     return data.json();
   }
-  // TO DO: Add another methods to youtube
+  // TODO(ernestognw): Add POST method for youtube
 };
 
 export { youtube };

@@ -7,7 +7,7 @@ const medium = {
 
     return data.json();
   }
-  // TO DO: Add another methods to medium
+  // TODO(ernestognw): Add POST method for medium
 };
 
 export { medium };
