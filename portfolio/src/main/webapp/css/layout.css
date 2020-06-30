@@ -1,0 +1,11 @@
+.block-y-center {
+  display: flex;
+  margin-bottom: auto;
+  margin-top: auto;
+}
+
+.block-x-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
