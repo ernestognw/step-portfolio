@@ -4,7 +4,7 @@ const api = {
 
     return data.text();
   }
-  // TO DO: Add another methods to api
+  // TODO(ernestognw): Add POST method for api
 };
 
 export { api };
