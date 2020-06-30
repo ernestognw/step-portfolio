@@ -1,5 +1,5 @@
+import { API_KEY } from '../secret.js';
 const baseURL = 'https://www.googleapis.com/youtube/v3';
-const API_KEY = 'AIzaSyBENDSXuXOOLyByHnGTzMrYRhzWHIMnIsY';
 
 const youtube = {
   get: async path => {
