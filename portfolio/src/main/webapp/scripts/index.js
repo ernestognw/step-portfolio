@@ -1,6 +1,7 @@
 import { updateRepos } from './github/index.js';
 import { updateVideos } from './youtube/index.js';
 import { updatePosts } from './medium/index.js';
+import { addQuote } from './api/index.js';
 
 window.onload = () => {
   const perPage = 6;
@@ -15,6 +16,7 @@ window.onload = () => {
   updateRepos(page, perPage);
   updateVideos();
   updatePosts();
+  addQuote();
 
   // Listeners
   loadMoreReposButton.addEventListener('click', async () => {
