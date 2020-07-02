@@ -1,6 +1,7 @@
 import { api } from './client.js';
+import { getCommentTemplate } from './utils.js';
 
-const addComments = async () => {
+const updateComments = async () => {
   const comments = await api.get('/comments');
 
   const container = document.getElementById('comments');
@@ -10,25 +11,34 @@ const addComments = async () => {
 
     container.insertAdjacentHTML(
       'beforeend',
-      `<article class="media">
-        <figure class="media-left">
-          <p class="image is-64x64">
-            <img src="./images/avatar-placeholder.png">
-          </p>
-        </figure>
-        <div class="media-content">
-          <div class="content">
-            <p>
-              <strong>${username}</strong>
-              <br>
-              ${text}
-              <br>
-              <small>${moment(createdAt).fromNow()}</small>
-            </p>
-          </div>
-      </article>`
+      getCommentTemplate(username, text, createdAt)
     );
   }
 };
 
-export { addComments };
+const addComment = async newComment => {
+  const { username, comment, createdAt } = newComment;
+  const submitButton = document.getElementById('submit-post');
+  submitButton.disabled = true;
+  submitButton.classList.add('is-loading');
+
+  await api.post('/comments', { body: JSON.stringify(newComment) });
+
+  const container = document.getElementById('comments');
+  container.insertAdjacentHTML(
+    'beforeend',
+    getCommentTemplate(username, comment, createdAt)
+  );
+
+  newComment = {
+    username: '',
+    comment: ''
+  };
+
+  postForm.username.value = '';
+  postForm.comment.value = '';
+  submitButton.disabled = false;
+  submitButton.classList.remove('is-loading');
+};
+
+export { updateComments, addComment };

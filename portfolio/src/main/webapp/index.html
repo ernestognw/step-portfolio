@@ -186,23 +186,23 @@
             <img src="./images/avatar-placeholder.png">
           </p>
         </figure>
-        <div class="media-content">
+        <form id="post-form" class="media-content">
           <div class="field">
             <div class="control">
-              <input class="input" type="text" placeholder="Username">
+              <input required id="post-username" class="input" type="text" placeholder="Username">
             </div>
           </div>
           <div class="field">
             <div class="control">
-              <textarea class="textarea" placeholder="Add a comment..."></textarea>
+              <textarea required id="post-comment" class="textarea" placeholder="Add a comment..."></textarea>
             </div>
           </div>
           <div class="field">
             <p class="control">
-              <button class="button">Post comment</button>
+              <button id="submit-post" class="button">Post comment</button>
             </p>
           </div>
-        </div>
+        </form>
       </article>
     </div>
   </div>
