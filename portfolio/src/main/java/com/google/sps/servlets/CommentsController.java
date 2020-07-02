@@ -36,9 +36,6 @@ public class CommentsController extends HttpServlet {
   @Override
   public void init() {
     comments = new ArrayList<>();
-    for (Integer i = 0; i < 5; i++) {
-      comments.add(0, new Comment("Foo", "Bar", new Date()));
-    }
   }
 
   @Override
@@ -68,7 +65,7 @@ public class CommentsController extends HttpServlet {
     String comment = getAttribute(json, "comment", "...");
     Date createdAt = new Date();
 
-    comments.add(0, new Comment(username, comment, createdAt));
+    comments.add(comments.size(), new Comment(username, comment, createdAt));
 
     Gson gson = new Gson();
     String data = gson.toJson(comments);
