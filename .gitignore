@@ -1,3 +1,7 @@
 .vscode/
 target/
 secret.*
+.settings
+.classpath
+.project
+.factorypath
