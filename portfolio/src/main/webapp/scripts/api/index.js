@@ -102,7 +102,7 @@ window.deleteComment = async id => {
 
   const comment = document.getElementById(`${id}-comment`);
   comment.remove();
-  postForm.commentsQty.innerText = Number(commentsQty.innerText) - 1;
+  postForm.commentsQty.innerText = Number(postForm.commentsQty.innerText) - 1;
 };
 
 export { setFilterState, updateComments, addComment };
