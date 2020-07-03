@@ -111,8 +111,10 @@ public class CommentsController extends HttpServlet {
 
     datastore.put(commentEntity);
 
+    long id = commentEntity.getKey().getId();
+
     Gson gson = new Gson();
-    String data = gson.toJson(commentEntity);
+    String data = gson.toJson(new Comment(id, username, comment, createdAt, likes));
 
     response.getWriter().println(data);
   }
@@ -143,12 +145,17 @@ public class CommentsController extends HttpServlet {
     }
 
     int likes = ((Long) commentEntity.getProperty("likes")).intValue();
-    commentEntity.setProperty("likes", likes + 1);
+    likes++;
+    commentEntity.setProperty("likes", likes);
 
     datastore.put(commentEntity);
 
+    String username = (String) commentEntity.getProperty("username");
+    String comment = (String) commentEntity.getProperty("comment");
+    long createdAt = (long) commentEntity.getProperty("createdAt");
+
     Gson gson = new Gson();
-    String data = gson.toJson(commentEntity);
+    String data = gson.toJson(new Comment(commentEntity.getKey().getId(), username, comment, createdAt, likes));
 
     response.getWriter().println(data);
   }
