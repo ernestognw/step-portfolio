@@ -48,11 +48,11 @@ const updateComments = async ({ page, pageSize, order, orderBy }) => {
   container.innerHTML = '';
 
   for (let comment of comments) {
-    const { createdAt, username, comment: text } = comment;
+    const { id, createdAt, username, comment: text, likes } = comment;
 
     container.insertAdjacentHTML(
       'beforeend',
-      getCommentTemplate(username, text, createdAt)
+      getCommentTemplate(id, username, text, createdAt, likes)
     );
   }
 };
@@ -63,12 +63,14 @@ const addComment = async newComment => {
   submitButton.disabled = true;
   submitButton.classList.add('is-loading');
 
-  await api.post('/comments', { body: JSON.stringify(newComment) });
+  const { id } = await api.post('/comments', {
+    body: JSON.stringify(newComment)
+  });
 
   const container = document.getElementById('comments');
   container.insertAdjacentHTML(
     'afterbegin',
-    getCommentTemplate(username, comment, createdAt)
+    getCommentTemplate(id, username, comment, createdAt, 0)
   );
 
   newComment = {
@@ -80,6 +82,15 @@ const addComment = async newComment => {
   postForm.comment.value = '';
   submitButton.disabled = false;
   submitButton.classList.remove('is-loading');
+};
+
+window.voteComment = async id => {
+  const { likes } = await api.put('/comments', {
+    body: JSON.stringify({ id: id.toString() })
+  });
+
+  const likesQty = document.getElementById(`${id}-span`);
+  likesQty.innerText = likes;
 };
 
 export { setFilterState, updateComments, addComment };
