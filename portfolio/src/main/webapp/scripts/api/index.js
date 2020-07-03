@@ -1,10 +1,51 @@
 import { api } from './client.js';
 import { getCommentTemplate } from './utils.js';
 
-const updateComments = async () => {
-  const comments = await api.get('/comments');
+const setFilterState = ({ page, pageSize, order, orderBy }) => {
+  const {
+    latestButton,
+    popularButton,
+    pageNumber,
+    pageSizeInput,
+    orderSelect
+  } = window.postFilters;
+  if (orderBy === 'createdAt') {
+    popularButton.classList.remove('is-active');
+    latestButton.classList.add('is-active');
+  } else if (orderBy === 'likes') {
+    latestButton.classList.remove('is-active');
+    popularButton.classList.add('is-active');
+  }
+  orderSelect.value = order;
+  pageSizeInput.value = pageSize;
+  pageNumber.innerHTML = page;
+};
 
+const updateComments = async ({ page, pageSize, order, orderBy }) => {
+  const {
+    commentsQty,
+    pagesTotal,
+    firstPageButton,
+    prevPageButton,
+    nextPageButton,
+    lastPageButton
+  } = window.postFilters;
+
+  const {
+    info: { next, prev, count, pages },
+    results: comments
+  } = await api.get(
+    `/comments?page=${page}&pageSize=${pageSize}&order=${order}&orderBy=${orderBy}`
+  );
+
+  pagesTotal.innerText = pages;
+  commentsQty.innerText = count;
+  firstPageButton.disabled = !prev;
+  prevPageButton.disabled = !prev;
+  nextPageButton.disabled = !next;
+  lastPageButton.disabled = !next;
   const container = document.getElementById('comments');
+  container.innerHTML = '';
 
   for (let comment of comments) {
     const { createdAt, username, comment: text } = comment;
@@ -41,4 +82,4 @@ const addComment = async newComment => {
   submitButton.classList.remove('is-loading');
 };
 
-export { updateComments, addComment };
+export { setFilterState, updateComments, addComment };

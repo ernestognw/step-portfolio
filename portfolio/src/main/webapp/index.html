@@ -208,19 +208,24 @@
       <hr />
       <div class="tabs">
         <ul>
-          <li class="is-active"><a>Latest</a></li>
-          <li class="mr-5"><a>Popular</a></li>
-          <p class="is-6 block-x-right">Page size: </p>
+          <li id="latest-button"><a>Latest</a></li>
+          <li id="popular-button" class="mr-5"><a>Popular</a></li>
+          <button id="refresh-comments" class="button is-small block-x-right">
+            <span class="icon is-small">
+              <i class="fa fa-refresh"></i>
+            </span>
+          </button>
+          <p class="is-6 ml-5">Page size: </p>
           <div class="ml-3 mb-0 field">
             <div class="control">
-              <input class="input is-small" type="number" placeholder="Page size">
+              <input id="page-size-input" min="1" class="input is-small" type="number" placeholder="Page size">
             </div>
           </div>
           <p class="ml-5 is-6">Order: </p>
           <div class="ml-3 field">
             <div class="control">
               <div class="select is-small">
-                <select>
+                <select id="order-select">
                   <option default value="asc">Ascendant</option>
                   <option value="desc">Descendant</option>
                 </select>
@@ -231,33 +236,34 @@
       </div>
       <div id="comments" class="mt-3">
       </div>
-      <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-        <a class="button is-small mr-3">
+      <nav class="pagination is-centered mt-5" role="navigation" aria-label="pagination">
+        <button id="first-page-button" class="button is-small mr-3">
           <span class="icon">
             <i class="fa fa-step-backward"></i>
           </span>
-        </a>
-        <a class="button is-small">Previous</a>
+        </button>
+        <button id="prev-page-button" class="button is-small">Previous</button>
         <div class="block-x-center">
           <p class="is-6 ">
             <span id="comments-qty">
-              15
             </span>
-            comentario(s)
+            comment(s)
           </p>
           <p class="is-6 ">
-            Page 
-            <span id="comments-qty">
-              1
+            Page
+            <span id="page-number">
+            </span>
+            of
+            <span id="pages-total">
             </span>
           </p>
         </div>
-        <a class="button is-small">Next</a>
-        <a class="button is-small ml-3">
+        <button id="next-page-button" class="button is-small">Next</button>
+        <button id="last-page-button" class="button is-small ml-3">
           <span class="icon">
             <i class="fa fa-step-forward"></i>
           </span>
-        </a>
+        </button>
     </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>
