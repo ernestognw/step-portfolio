@@ -127,7 +127,8 @@
               services with the same account. Reaching more than <strong>10 organizations</strong>, and almost
               <strong>10,000 users</strong> across platforms</p>
             <p class="is-size-7 mt-2">Also, I created a document certification and signature protocol based on
-              <strong>Ethereum Blockchain and the Elliptic Curve Digital Signature</strong> algorithm which allows users to upload and certify many types of documents</p>
+              <strong>Ethereum Blockchain and the Elliptic Curve Digital Signature</strong> algorithm which allows users
+              to upload and certify many types of documents</p>
           </div>
         </div>
         <div class="work--list-element">
@@ -140,7 +141,9 @@
             </p>
             <a class="is-size-7" href="https://blockchainacademy.mx" target="_blank"
               rel="noopener noreferrer">https://blockchainacademy.mx</a>
-            <p class="is-size-7">Teaching software professionals to develop <strong>smart contracts</strong> in Ethereum Blockchain and use them to create <strong>decentralized applications</strong> (DApps), certifying more than 200 professionals</p>
+            <p class="is-size-7">Teaching software professionals to develop <strong>smart contracts</strong> in Ethereum
+              Blockchain and use them to create <strong>decentralized applications</strong> (DApps), certifying more
+              than 200 professionals</p>
           </div>
         </div>
       </div>
@@ -178,8 +181,6 @@
       <p class="title mb-4 is-size-4">
         Comments
       </p>
-      <div id="comments" class="mt-3">
-      </div>
       <article class="media mt-3">
         <figure class="media-left">
           <p class="image is-64x64">
@@ -199,11 +200,64 @@
           </div>
           <div class="field">
             <p class="control">
-              <button id="submit-post" class="button">Post comment</button>
+              <button id="submit-post" class="button is-info block-x-right">Post comment</button>
             </p>
           </div>
         </form>
       </article>
+      <hr />
+      <div class="tabs">
+        <ul>
+          <li class="is-active"><a>Latest</a></li>
+          <li class="mr-5"><a>Popular</a></li>
+          <p class="is-6 block-x-right">Page size: </p>
+          <div class="ml-3 mb-0 field">
+            <div class="control">
+              <input class="input is-small" type="number" placeholder="Page size">
+            </div>
+          </div>
+          <p class="ml-5 is-6">Order: </p>
+          <div class="ml-3 field">
+            <div class="control">
+              <div class="select is-small">
+                <select>
+                  <option default value="asc">Ascendant</option>
+                  <option value="desc">Descendant</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </ul>
+      </div>
+      <div id="comments" class="mt-3">
+      </div>
+      <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+        <a class="button is-small mr-3">
+          <span class="icon">
+            <i class="fa fa-step-backward"></i>
+          </span>
+        </a>
+        <a class="button is-small">Previous</a>
+        <div class="block-x-center">
+          <p class="is-6 ">
+            <span id="comments-qty">
+              15
+            </span>
+            comentario(s)
+          </p>
+          <p class="is-6 ">
+            Page 
+            <span id="comments-qty">
+              1
+            </span>
+          </p>
+        </div>
+        <a class="button is-small">Next</a>
+        <a class="button is-small ml-3">
+          <span class="icon">
+            <i class="fa fa-step-forward"></i>
+          </span>
+        </a>
     </div>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.27.0/moment.min.js"></script>

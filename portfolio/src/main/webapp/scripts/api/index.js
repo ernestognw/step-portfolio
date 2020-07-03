@@ -26,7 +26,7 @@ const addComment = async newComment => {
 
   const container = document.getElementById('comments');
   container.insertAdjacentHTML(
-    'beforeend',
+    'afterbegin',
     getCommentTemplate(username, comment, createdAt)
   );
 
