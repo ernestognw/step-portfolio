@@ -13,6 +13,11 @@ const api = {
     const data = await fetch(path, { ...options, method: 'PUT' });
 
     return data.json();
+  },
+  delete: async (path, options = { method: 'DELETE' }) => {
+    const data = await fetch(path, { ...options, method: 'DELETE' });
+
+    return data.json();
   }
 };
 

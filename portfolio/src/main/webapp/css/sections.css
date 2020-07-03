@@ -4,6 +4,10 @@
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
+.comments--comment:not(:hover) .comments--hidden {
+  display: none !important;
+}
+
 .main--description {
   margin-right: auto;
   max-width: 600px;

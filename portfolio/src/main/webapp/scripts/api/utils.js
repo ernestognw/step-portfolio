@@ -4,7 +4,7 @@ const getCommentTemplate = (
   text,
   createdAt,
   likes
-) => `<article class="media">
+) => `<article class="media comments--comment" id="${id}-comment">
 <figure class="media-left">
   <p class="image is-64x64">
     <img src="./images/avatar-placeholder.png" alt="${username} avatar">
@@ -14,6 +14,13 @@ const getCommentTemplate = (
   <div class="content">
     <p>
       <strong>${username}</strong>
+      <small class="ml-1 comments--hidden">
+        <a onclick="deleteComment(${id})">
+          <span class="icon">
+            <i class="fa fa-trash"></i>
+          </span>
+        </a>
+      </small>
       <br>
       ${text}
       <br>

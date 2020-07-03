@@ -95,4 +95,14 @@ window.voteComment = async id => {
   likesQty.innerText = likes;
 };
 
+window.deleteComment = async id => {
+  await api.delete('/comments', {
+    body: JSON.stringify({ id: id.toString() })
+  });
+
+  const comment = document.getElementById(`${id}-comment`);
+  comment.remove();
+  postForm.commentsQty.innerText = Number(commentsQty.innerText)--;
+};
+
 export { setFilterState, updateComments, addComment };
