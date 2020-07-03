@@ -68,7 +68,7 @@ const addComment = async newComment => {
     body: JSON.stringify(newComment)
   });
 
-  commentsQty.innerText = Number(commentsQty.innerText)++;
+  commentsQty.innerText = Number(commentsQty.innerText) + 1;
   const container = document.getElementById('comments');
   container.insertAdjacentHTML(
     'afterbegin',
@@ -102,7 +102,7 @@ window.deleteComment = async id => {
 
   const comment = document.getElementById(`${id}-comment`);
   comment.remove();
-  postForm.commentsQty.innerText = Number(commentsQty.innerText)--;
+  postForm.commentsQty.innerText = Number(commentsQty.innerText) - 1;
 };
 
 export { setFilterState, updateComments, addComment };
