@@ -17,6 +17,9 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
@@ -47,11 +50,13 @@ public class CommentsController extends HttpServlet {
 
     List<Comment> comments = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
+      long id = entity.getKey().getId();
       String username = (String) entity.getProperty("username");
       String comment = (String) entity.getProperty("comment");
       long createdAt = (long) entity.getProperty("createdAt");
+      int likes = ((Long) entity.getProperty("likes")).intValue();
 
-      comments.add(new Comment(username, comment, createdAt));
+      comments.add(new Comment(id, username, comment, createdAt, likes));
     }
 
     Gson gson = new Gson();
@@ -76,11 +81,49 @@ public class CommentsController extends HttpServlet {
     String username = getAttribute(json, "username", "Anonymous");
     String comment = getAttribute(json, "comment", "...");
     long createdAt = System.currentTimeMillis();
+    int likes = 0;
 
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("username", username);
     commentEntity.setProperty("comment", comment);
     commentEntity.setProperty("createdAt", createdAt);
+    commentEntity.setProperty("likes", likes);
+
+    datastore.put(commentEntity);
+
+    Gson gson = new Gson();
+    String data = gson.toJson(commentEntity);
+
+    response.getWriter().println(data);
+  }
+
+  @Override
+  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.setContentType("application/json;");
+
+    String body = getBody(request);
+    JSONObject json = new JSONObject();
+    
+    try {
+      JSONParser parser = new JSONParser();
+      json = (JSONObject) parser.parse(body);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    String id = getAttribute(json, "id", null);
+    Key key = KeyFactory.createKey("Comment", Long.parseLong(id));
+
+    Entity commentEntity;
+    try {
+      commentEntity = datastore.get(key);
+    } catch (EntityNotFoundException e) {
+      e.printStackTrace();
+      return;
+    }
+
+    int likes = ((Long) commentEntity.getProperty("likes")).intValue();
+    commentEntity.setProperty("likes", likes + 1);
 
     datastore.put(commentEntity);
 
@@ -91,7 +134,8 @@ public class CommentsController extends HttpServlet {
   }
 
   private String getBody(HttpServletRequest request) throws IOException {
-    if ("POST".equalsIgnoreCase(request.getMethod())) {
+    String method = request.getMethod();
+    if (method == "POST" || method == "PUT") {
       Scanner scanner = new Scanner(request.getInputStream(), "UTF-8");
       scanner.useDelimiter("\\A");
 
