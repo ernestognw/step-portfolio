@@ -159,10 +159,35 @@ public class CommentsController extends HttpServlet {
 
     response.getWriter().println(data);
   }
+  
+  @Override
+  public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.setContentType("application/json;");
+
+    String body = getBody(request);
+    JSONObject json = new JSONObject();
+
+    try {
+      JSONParser parser = new JSONParser();
+      json = (JSONObject) parser.parse(body);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    String id = getAttribute(json, "id", null);
+    Key key = KeyFactory.createKey("Comment", Long.parseLong(id));
+
+    datastore.delete(key);
+
+    JSONObject obj = new JSONObject();
+    obj.put("status", "ok");
+
+    response.getWriter().println(obj.toString());
+  }
 
   private String getBody(HttpServletRequest request) throws IOException {
     String method = request.getMethod();
-    if (method == "POST" || method == "PUT") {
+    if (method == "POST" || method == "PUT" || method == "DELETE") {
       Scanner scanner = new Scanner(request.getInputStream(), "UTF-8");
       scanner.useDelimiter("\\A");
 
