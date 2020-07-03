@@ -62,11 +62,13 @@ const addComment = async newComment => {
   const submitButton = document.getElementById('submit-post');
   submitButton.disabled = true;
   submitButton.classList.add('is-loading');
+  const { commentsQty } = window.postFilters;
 
   const { id } = await api.post('/comments', {
     body: JSON.stringify(newComment)
   });
 
+  commentsQty.innerText = Number(commentsQty.innerText)++;
   const container = document.getElementById('comments');
   container.insertAdjacentHTML(
     'afterbegin',
