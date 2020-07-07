@@ -1,7 +1,7 @@
 import { updateRepos } from './github/index.js';
 import { updateVideos } from './youtube/index.js';
 import { updatePosts } from './medium/index.js';
-import { setFilterState, updateComments, addComment } from './api/index.js';
+import { addComment, updateComments, setFilterState } from './api/index.js';
 
 window.onload = () => {
   // State variables

@@ -1,24 +1,33 @@
 import { api } from './client.js';
 import { getCommentTemplate } from './utils.js';
 
-const setFilterState = ({ page, pageSize, order, orderBy }) => {
-  const {
-    latestButton,
-    popularButton,
-    pageNumber,
-    pageSizeInput,
-    orderSelect
-  } = window.postFilters;
-  if (orderBy === 'createdAt') {
-    popularButton.classList.remove('is-active');
-    latestButton.classList.add('is-active');
-  } else if (orderBy === 'likes') {
-    latestButton.classList.remove('is-active');
-    popularButton.classList.add('is-active');
-  }
-  orderSelect.value = order;
-  pageSizeInput.value = pageSize;
-  pageNumber.innerHTML = page;
+const addComment = async newComment => {
+  const { username, comment, createdAt } = newComment;
+  const submitButton = document.getElementById('submit-post');
+  submitButton.disabled = true;
+  submitButton.classList.add('is-loading');
+  const { commentsQty } = window.postFilters;
+
+  const { id } = await api.post('/comments', {
+    body: JSON.stringify(newComment)
+  });
+
+  commentsQty.innerText = Number(commentsQty.innerText) + 1;
+  const container = document.getElementById('comments');
+  container.insertAdjacentHTML(
+    'afterbegin',
+    getCommentTemplate(id, username, comment, createdAt, 0)
+  );
+
+  newComment = {
+    username: '',
+    comment: ''
+  };
+
+  postForm.username.value = '';
+  postForm.comment.value = '';
+  submitButton.disabled = false;
+  submitButton.classList.remove('is-loading');
 };
 
 const updateComments = async ({ page, pageSize, order, orderBy }) => {
@@ -57,33 +66,24 @@ const updateComments = async ({ page, pageSize, order, orderBy }) => {
   }
 };
 
-const addComment = async newComment => {
-  const { username, comment, createdAt } = newComment;
-  const submitButton = document.getElementById('submit-post');
-  submitButton.disabled = true;
-  submitButton.classList.add('is-loading');
-  const { commentsQty } = window.postFilters;
-
-  const { id } = await api.post('/comments', {
-    body: JSON.stringify(newComment)
-  });
-
-  commentsQty.innerText = Number(commentsQty.innerText) + 1;
-  const container = document.getElementById('comments');
-  container.insertAdjacentHTML(
-    'afterbegin',
-    getCommentTemplate(id, username, comment, createdAt, 0)
-  );
-
-  newComment = {
-    username: '',
-    comment: ''
-  };
-
-  postForm.username.value = '';
-  postForm.comment.value = '';
-  submitButton.disabled = false;
-  submitButton.classList.remove('is-loading');
+const setFilterState = ({ page, pageSize, order, orderBy }) => {
+  const {
+    latestButton,
+    popularButton,
+    pageNumber,
+    pageSizeInput,
+    orderSelect
+  } = window.postFilters;
+  if (orderBy === 'createdAt') {
+    popularButton.classList.remove('is-active');
+    latestButton.classList.add('is-active');
+  } else if (orderBy === 'likes') {
+    latestButton.classList.remove('is-active');
+    popularButton.classList.add('is-active');
+  }
+  orderSelect.value = order;
+  pageSizeInput.value = pageSize;
+  pageNumber.innerHTML = page;
 };
 
 window.voteComment = async id => {
@@ -107,4 +107,4 @@ window.deleteComment = async id => {
   commentsQty.innerText = Number(commentsQty.innerText) - 1;
 };
 
-export { setFilterState, updateComments, addComment };
+export { addComment, updateComments, setFilterState };
