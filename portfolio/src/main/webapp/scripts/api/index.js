@@ -1,21 +1,6 @@
 import { api } from './client.js';
 import { getCommentTemplate } from './utils.js';
 
-const updateComments = async () => {
-  const comments = await api.get('/comments');
-
-  const container = document.getElementById('comments');
-
-  for (let comment of comments) {
-    const { createdAt, username, comment: text } = comment;
-
-    container.insertAdjacentHTML(
-      'beforeend',
-      getCommentTemplate(username, text, createdAt)
-    );
-  }
-};
-
 const addComment = async newComment => {
   const { username, comment, createdAt } = newComment;
   const submitButton = document.getElementById('submit-post');
@@ -41,4 +26,19 @@ const addComment = async newComment => {
   submitButton.classList.remove('is-loading');
 };
 
-export { updateComments, addComment };
+const updateComments = async () => {
+  const comments = await api.get('/comments');
+
+  const container = document.getElementById('comments');
+
+  for (let comment of comments) {
+    const { createdAt, username, comment: text } = comment;
+
+    container.insertAdjacentHTML(
+      'beforeend',
+      getCommentTemplate(username, text, createdAt)
+    );
+  }
+};
+
+export { addComment, updateComments };
