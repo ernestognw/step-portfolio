@@ -17,13 +17,17 @@ package com.google.sps.servlets;
 import com.google.gson.Gson;
 import com.google.sps.models.Comment;
 import java.io.IOException;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 @WebServlet("/comments")
 public class CommentsController extends HttpServlet {
@@ -32,9 +36,6 @@ public class CommentsController extends HttpServlet {
   @Override
   public void init() {
     comments = new ArrayList<>();
-    for(Integer i = 0; i < 5; i++){
-      comments.add(0, new Comment("Foo", "Bar", new Date()));
-    }
   }
 
   @Override
@@ -44,6 +45,59 @@ public class CommentsController extends HttpServlet {
     Gson gson = new Gson();
     String data = gson.toJson(comments);
 
-    response.getWriter().println(data);  
+    response.getWriter().println(data);
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.setContentType("application/json;");
+
+    String body = getBody(request);
+    JSONObject json = new JSONObject();
+    try {
+      JSONParser parser = new JSONParser();
+      json = (JSONObject) parser.parse(body);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    String username = getAttribute(json, "username", "Anonymous");
+    String comment = getAttribute(json, "comment", "...");
+    Date createdAt = new Date();
+
+    comments.add(comments.size(), new Comment(username, comment, createdAt));
+
+    Gson gson = new Gson();
+    String data = gson.toJson(comments);
+
+    response.getWriter().println(data);
+  }
+
+  private String getBody(HttpServletRequest request) throws IOException {
+    if ("POST".equalsIgnoreCase(request.getMethod())) {
+      Scanner scanner = new Scanner(request.getInputStream(), "UTF-8");
+      scanner.useDelimiter("\\A");
+
+      String body = "";
+
+      if (scanner.hasNext()) {
+        body = scanner.next();
+      }
+
+      scanner.close();
+
+      return body;
+    }
+
+    return "";
+  }
+
+  private String getAttribute(JSONObject json, String attribute, String defaultValue) {
+    String value = (String) json.get(attribute);
+    if (value == null) {
+      return defaultValue;
+    }
+
+    return value;
   }
 }
