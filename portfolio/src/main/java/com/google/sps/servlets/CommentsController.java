@@ -14,11 +14,16 @@
 
 package com.google.sps.servlets;
 
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.gson.Gson;
 import com.google.sps.models.Comment;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import javax.servlet.annotation.WebServlet;
@@ -31,16 +36,23 @@ import org.json.simple.parser.ParseException;
 
 @WebServlet("/comments")
 public class CommentsController extends HttpServlet {
-  private List<Comment> comments;
-
-  @Override
-  public void init() {
-    comments = new ArrayList<>();
-  }
+  private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json;");
+
+    Query query = new Query("Comment").addSort("createdAt", SortDirection.DESCENDING);
+    PreparedQuery results = datastore.prepare(query);
+
+    List<Comment> comments = new ArrayList<>();
+    for (Entity entity : results.asIterable()) {
+      String username = (String) entity.getProperty("username");
+      String comment = (String) entity.getProperty("comment");
+      long createdAt = (long) entity.getProperty("createdAt");
+
+      comments.add(new Comment(username, comment, createdAt));
+    }
 
     Gson gson = new Gson();
     String data = gson.toJson(comments);
@@ -63,12 +75,17 @@ public class CommentsController extends HttpServlet {
 
     String username = getAttribute(json, "username", "Anonymous");
     String comment = getAttribute(json, "comment", "...");
-    Date createdAt = new Date();
+    long createdAt = System.currentTimeMillis();
 
-    comments.add(comments.size(), new Comment(username, comment, createdAt));
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("username", username);
+    commentEntity.setProperty("comment", comment);
+    commentEntity.setProperty("createdAt", createdAt);
+
+    datastore.put(commentEntity);
 
     Gson gson = new Gson();
-    String data = gson.toJson(comments);
+    String data = gson.toJson(commentEntity);
 
     response.getWriter().println(data);
   }

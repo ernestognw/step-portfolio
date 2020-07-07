@@ -1,13 +1,11 @@
 package com.google.sps.models;
 
-import java.util.Date;
-
 public class Comment {
   private String username;
   private String comment;
-  private Date createdAt;
+  private long createdAt;
 
-  public Comment(String _username, String _comment, Date _createdAt) {
+  public Comment(String _username, String _comment, long _createdAt) {
     username = _username;
     comment = _comment;
     createdAt = _createdAt;
@@ -21,7 +19,7 @@ public class Comment {
     return comment;
   }
  
-  public Date getCreatedAt() {
+  public long getCreatedAt() {
     return createdAt;
   }
 }
