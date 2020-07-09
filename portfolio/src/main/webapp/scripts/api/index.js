@@ -8,7 +8,7 @@ const addComment = async newComment => {
   submitButton.classList.add('is-loading');
   const { commentsQty } = window.postFilters;
 
-  const { id } = await api.post('/comments', {
+  const { id, sentiment } = await api.post('/comments', {
     body: JSON.stringify(newComment)
   });
 
@@ -16,7 +16,7 @@ const addComment = async newComment => {
   const container = document.getElementById('comments');
   container.insertAdjacentHTML(
     'afterbegin',
-    getCommentTemplate(id, username, comment, createdAt, 0)
+    getCommentTemplate(id, username, comment, createdAt, 0, sentiment)
   );
 
   newComment = {
@@ -57,11 +57,18 @@ const updateComments = async ({ page, pageSize, order, orderBy }) => {
   container.innerHTML = '';
 
   for (let comment of comments) {
-    const { id, createdAt, username, comment: text, likes } = comment;
+    const {
+      id,
+      createdAt,
+      username,
+      comment: text,
+      likes,
+      sentiment
+    } = comment;
 
     container.insertAdjacentHTML(
       'beforeend',
-      getCommentTemplate(id, username, text, createdAt, likes)
+      getCommentTemplate(id, username, text, createdAt, likes, sentiment)
     );
   }
 };
