@@ -1,7 +1,8 @@
 import { API_KEY } from '../secret.js';
 
-// This method is created in order to avoid API_KEY to be
-// hardcoded in html, it allows me to keep it in secret.js
+/**
+ * This method is created in order to avoid API_KEY to be hardcoded in html, it allows me to keep it in secret.js
+ */
 const insertMapsScript = () =>
   new Promise(resolve => {
     const script = document.createElement('script');

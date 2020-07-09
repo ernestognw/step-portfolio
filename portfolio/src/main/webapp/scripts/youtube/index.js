@@ -1,5 +1,14 @@
 import { youtube } from './client.js';
 
+/**
+ * Function to fetch video data and insert them into the DOM
+ *
+ * It relies on an internal list of videos that is set manually
+ * since there is no way to filter my specific videos from youtube.
+ * The channel is shared by other people.
+ *
+ * If any other way to get the exact videos is found, then replace.
+ */
 const updateVideos = async () => {
   const myVideos = [
     'x4bX0FueaLs',

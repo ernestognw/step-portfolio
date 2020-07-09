@@ -1,14 +1,15 @@
 import { updateRepos } from './github/index.js';
 import { updateVideos } from './youtube/index.js';
 import { updatePosts } from './medium/index.js';
-import {
-  addComment,
-  updateComments,
-  setFilterState
-} from './api/index.js';
+import { addComment, updateComments, setFilterState } from './api/index.js';
 import { insertMapsScript } from './maps/insert-maps-script.js';
 import { loadMap } from './maps/load-map.js';
 
+/**
+ * window.onload is a function fired when the window has been loaded completely
+ * Is used as a starter for the other data rendering methods, and as a single
+ * source of state for another data fetching methods
+ */
 window.onload = async () => {
   // State variables
   const githubParams = {

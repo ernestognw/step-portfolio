@@ -1,5 +1,11 @@
 import styles from './map-styles.js';
 
+/**
+ * Function used to get map details, create the map and insert it to DOM
+ *
+ * It relies on hardcoded place data, which can be replaced in the future
+ * TODO(ernestognw): Create a web API service to get the important places instead of hardcode them here
+ */
 const loadMap = () => {
   const map = new google.maps.Map(document.getElementById('map'), {
     center: { lat: 24.1477388, lng: -99.1768367 },
@@ -23,7 +29,7 @@ const loadMap = () => {
     {
       location: 'Torre BBVA CDMX',
       title: 'Blockchain Academy Mexico',
-      comment: `Here I learned everything I know. I have created many cool projects with them, and I'm still doing content for medium.com and youtube.com for them`
+      comment: `Here I learned everything I know. I have created many cool projects with them, and I'm still doing content in medium.com and youtube.com for them`
     }
   ];
 

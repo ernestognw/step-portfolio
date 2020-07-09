@@ -1,3 +1,8 @@
+/**
+ * Get the sentiment color to use in template
+ *
+ * @param {string} sentiment
+ */
 const getSentimentTagColor = sentiment => {
   switch (sentiment) {
     case 'Mad':
@@ -9,6 +14,18 @@ const getSentimentTagColor = sentiment => {
   }
 };
 
+/**
+ * To create a comment based in a template
+ *
+ * @param {string} id
+ * @param {string} username
+ * @param {string} text
+ * @param {string} createdAt
+ * @param {string} likes
+ * @param {string} sentiment
+ *
+ * @returns {string} Template with data from params, to insert as HTML in DOM
+ */
 const getCommentTemplate = (
   id,
   username,

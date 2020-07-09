@@ -1,5 +1,8 @@
 import { medium } from './client.js';
 
+/**
+ * Function to fetch posts data and insert them into the DOM
+ */
 const updatePosts = async () => {
   const { items: posts } = await medium.get('/feed/@ernestognw');
 
