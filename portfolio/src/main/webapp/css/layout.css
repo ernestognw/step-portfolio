@@ -4,8 +4,17 @@
   margin-top: auto;
 }
 
+.block-x-right {
+  display: block;
+  margin-left: auto;
+}
+
 .block-x-center {
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+.hide {
+  display: none;
 }
