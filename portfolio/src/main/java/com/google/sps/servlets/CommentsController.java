@@ -49,6 +49,21 @@ public class CommentsController extends HttpServlet {
     Happy, Neutral, Mad
   };
 
+  /**
+   * GET Method for /comments endpoint
+   * It gets the list of comments from datastore 
+   * filtered and ordered according to query params
+   * 
+   * The way it works is by requesting the whole list of comments
+   * to datastore. Although this is probably not the most perfomant approach
+   * there are no other options since datastore does not have functions to
+   * retrieve the total of entities, or event skip the first N entities.
+   * 
+   * If an alternative is found, changes are welcome
+   *
+   * @param request object containing request headers and other information coming from client
+   * @param response object containing response headers and other information going back to the client
+   */
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json;");
@@ -92,6 +107,14 @@ public class CommentsController extends HttpServlet {
     response.getWriter().println(data);
   }
 
+  /**
+   * POST Method for /comments endpoint
+   * It creates a new comment, passes through
+   * sentiment analysis API and inserts the new comment in datastore
+   * 
+   * @param request object containing request headers and other information coming from client
+   * @param response object containing response headers and other information going back to the client
+   */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json;");
@@ -128,6 +151,14 @@ public class CommentsController extends HttpServlet {
     response.getWriter().println(data);
   }
 
+  /**
+   * PUT Method for /comments endpoint
+   * Used to increase comment likes counting.
+   * This is done since any other field of the comment is editable
+   * 
+   * @param request object containing request headers and other information coming from client
+   * @param response object containing response headers and other information going back to the client
+   */
   @Override
   public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json;");
@@ -171,6 +202,14 @@ public class CommentsController extends HttpServlet {
     response.getWriter().println(data);
   }
 
+  /**
+   * DELETE Method for /comments endpoint
+   * Comment removal function. This deletes a comment
+   * entity by its id from datastore
+   * 
+   * @param request object containing request headers and other information coming from client
+   * @param response object containing response headers and other information going back to the client
+   */
   @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json;");
@@ -196,9 +235,18 @@ public class CommentsController extends HttpServlet {
     response.getWriter().println(obj.toString());
   }
 
+  /**
+   * Request Body Parser
+   * This method is an auxiliar for any request containing a body,
+   * so the context can access to it
+   * 
+   * @param request object from where the body will be read
+   * @return JSON Stringified representation of request body
+   */
   private String getBody(HttpServletRequest request) throws IOException {
     String method = request.getMethod();
-    if (method == "POST" || method == "PUT" || method == "DELETE") {
+    // Since GET method does not have a body, this prevents function to throw
+    if (method != "GET") {
       Scanner scanner = new Scanner(request.getInputStream(), "UTF-8");
       scanner.useDelimiter("\\A");
 
@@ -216,6 +264,17 @@ public class CommentsController extends HttpServlet {
     return "";
   }
 
+   /**
+   * JSON Attribute getter
+   * Allows to get an attribute out of a JSON object,
+   * and a default value can be supplied to be returned
+   * when attribute is null
+   * 
+   * @param json JSON object from where the attribute will be taken
+   * @param attribute key of the attribute
+   * @param defaultValue value to return if attribute is null
+   * @return JSON Stringified representation of request body
+   */
   private String getAttribute(JSONObject json, String attribute, String defaultValue) {
     String value = (String) json.get(attribute);
     if (value == null) {
@@ -225,6 +284,15 @@ public class CommentsController extends HttpServlet {
     return value;
   }
 
+  /**
+   * Page param parser
+   * This is a helper for GET method in /comments endpoint. 
+   * It allows to set the page param sent by client. And, if not present,
+   * it returns page 1 by default
+   * 
+   * @param page stringified page number taken from url params if present
+   * @return page number to send to the client
+   */
   private int parsePageParam(String page) {
     if (page != null)
       return Integer.parseInt(page);
@@ -239,6 +307,15 @@ public class CommentsController extends HttpServlet {
     return 5;
   }
 
+  /**
+   * Order param parser
+   * This is a helper for GET method in /comments endpoint. 
+   * It allows to set the order sent by client. And, if not present,
+   * it returns DESCENDING by default
+   * 
+   * @param order stringified order taken from url params if present
+   * @return order in which data will be sent to client
+   */
   private SortDirection parseOrderParam(String order) {
     switch ((order != null) ? order : "") {
     case "asc":
@@ -250,6 +327,15 @@ public class CommentsController extends HttpServlet {
     }
   }
 
+  /**
+   * Order By param parser
+   * This is a helper for GET method in /comments endpoint. 
+   * It allows to set the order sent by client. And, if not present,
+   * it returns createdAt by default
+   * 
+   * @param order stringified order taken from url params if present
+   * @return attribute of Comment to order by
+   */
   private String parseOrderByParam(String orderBy) {
     switch ((orderBy != null) ? orderBy : "") {
     case "createdAt":
@@ -261,6 +347,14 @@ public class CommentsController extends HttpServlet {
     }
   }
 
+  /**
+   * Sentiment Analyzer
+   * A method to analyze a score, result of Cloud Natural Language API
+   * This score is classified in intervals to return a sentiment
+   * 
+   * @param comment The plaintext comment to analyze
+   * @return Sentiment result from score classification
+   */
   private Sentiment analyzeSentiment(String comment) throws IOException {
     try (LanguageServiceClient languageService = LanguageServiceClient.create()) {
       Document document = Document.newBuilder().setContent(comment).setType(Document.Type.PLAIN_TEXT).build();
