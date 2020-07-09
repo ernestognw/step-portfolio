@@ -1,11 +1,15 @@
 import { updateRepos } from './github/index.js';
 import { updateVideos } from './youtube/index.js';
 import { updatePosts } from './medium/index.js';
-import { addComment, updateComments, setFilterState } from './api/index.js';
+import {
+  addComment,
+  updateComments,
+  setFilterState
+} from './api/index.js';
 import { insertMapsScript } from './maps/insert-maps-script.js';
 import { loadMap } from './maps/load-map.js';
 
-window.onload = () => {
+window.onload = async () => {
   // State variables
   const githubParams = {
     page: 1,
@@ -48,7 +52,6 @@ window.onload = () => {
   updateRepos(githubParams);
   updateVideos();
   updatePosts();
-  addComments();
   setFilterState(commentsParams);
   updateComments(commentsParams);
 
