@@ -1,6 +1,6 @@
 import { github } from './client.js';
 
-const updateRepos = async (page, perPage) => {
+const updateRepos = async ({ page, pageSize: perPage }) => {
   window.loadMoreReposButton.disabled = true;
   window.loadMoreReposButton.classList.add('is-loading');
 

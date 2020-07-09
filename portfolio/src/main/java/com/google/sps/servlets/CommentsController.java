@@ -17,11 +17,16 @@ package com.google.sps.servlets;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.datastore.Key;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.gson.Gson;
+import com.google.sps.models.Info;
 import com.google.sps.models.Comment;
+import com.google.sps.models.Comments;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,18 +47,38 @@ public class CommentsController extends HttpServlet {
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json;");
 
-    Query query = new Query("Comment").addSort("createdAt", SortDirection.DESCENDING);
+    // Parse parameters
+    int page = parsePageParam(request.getParameter("page"));
+    int pageSize = parsePageSizeParam(request.getParameter("pageSize"));
+    SortDirection order = parseOrderParam(request.getParameter("order"));
+    String orderBy = parseOrderByParam(request.getParameter("orderBy"));
+
+    Query query = new Query("Comment").addSort(orderBy, order);
     PreparedQuery results = datastore.prepare(query);
 
-    List<Comment> comments = new ArrayList<>();
+    List<Comment> commentsList = new ArrayList<>();
     for (Entity entity : results.asIterable()) {
+      long id = entity.getKey().getId();
       String username = (String) entity.getProperty("username");
       String comment = (String) entity.getProperty("comment");
       long createdAt = (long) entity.getProperty("createdAt");
+      int likes = ((Long) entity.getProperty("likes")).intValue();
 
-      comments.add(new Comment(username, comment, createdAt));
+      commentsList.add(new Comment(id, username, comment, createdAt, likes));
     }
 
+    int count = commentsList.size();
+    int pages = (int) Math.ceil((double) count / pageSize);
+    Integer next = page < pages ? (page + 1) : null;
+    Integer prev = page > 1 ? (page - 1) : null;
+
+    Info info = new Info(next, prev, count, pages);
+    int lowerIndex = (page - 1) * pageSize;
+    int upperIndex = page * pageSize;
+    List<Comment> trimmedComments = commentsList.subList(lowerIndex >= 0 ? lowerIndex : 0,
+        upperIndex <= count ? upperIndex : count);
+
+    Comments comments = new Comments(info, trimmedComments);
     Gson gson = new Gson();
     String data = gson.toJson(comments);
 
@@ -76,22 +101,93 @@ public class CommentsController extends HttpServlet {
     String username = getAttribute(json, "username", "Anonymous");
     String comment = getAttribute(json, "comment", "...");
     long createdAt = System.currentTimeMillis();
+    int likes = 0;
 
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("username", username);
     commentEntity.setProperty("comment", comment);
     commentEntity.setProperty("createdAt", createdAt);
+    commentEntity.setProperty("likes", likes);
 
     datastore.put(commentEntity);
 
+    long id = commentEntity.getKey().getId();
+
     Gson gson = new Gson();
-    String data = gson.toJson(commentEntity);
+    String data = gson.toJson(new Comment(id, username, comment, createdAt, likes));
 
     response.getWriter().println(data);
   }
 
+  @Override
+  public void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.setContentType("application/json;");
+
+    String body = getBody(request);
+    JSONObject json = new JSONObject();
+
+    try {
+      JSONParser parser = new JSONParser();
+      json = (JSONObject) parser.parse(body);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    String id = getAttribute(json, "id", null);
+    Key key = KeyFactory.createKey("Comment", Long.parseLong(id));
+
+    Entity commentEntity;
+    try {
+      commentEntity = datastore.get(key);
+    } catch (EntityNotFoundException e) {
+      e.printStackTrace();
+      return;
+    }
+
+    int likes = ((Long) commentEntity.getProperty("likes")).intValue();
+    likes++;
+    commentEntity.setProperty("likes", likes);
+
+    datastore.put(commentEntity);
+
+    String username = (String) commentEntity.getProperty("username");
+    String comment = (String) commentEntity.getProperty("comment");
+    long createdAt = (long) commentEntity.getProperty("createdAt");
+
+    Gson gson = new Gson();
+    String data = gson.toJson(new Comment(commentEntity.getKey().getId(), username, comment, createdAt, likes));
+
+    response.getWriter().println(data);
+  }
+  
+  @Override
+  public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    response.setContentType("application/json;");
+
+    String body = getBody(request);
+    JSONObject json = new JSONObject();
+
+    try {
+      JSONParser parser = new JSONParser();
+      json = (JSONObject) parser.parse(body);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+
+    String id = getAttribute(json, "id", null);
+    Key key = KeyFactory.createKey("Comment", Long.parseLong(id));
+
+    datastore.delete(key);
+
+    JSONObject obj = new JSONObject();
+    obj.put("status", "ok");
+
+    response.getWriter().println(obj.toString());
+  }
+
   private String getBody(HttpServletRequest request) throws IOException {
-    if ("POST".equalsIgnoreCase(request.getMethod())) {
+    String method = request.getMethod();
+    if (method == "POST" || method == "PUT" || method == "DELETE") {
       Scanner scanner = new Scanner(request.getInputStream(), "UTF-8");
       scanner.useDelimiter("\\A");
 
@@ -116,5 +212,41 @@ public class CommentsController extends HttpServlet {
     }
 
     return value;
+  }
+
+  private int parsePageParam(String page) {
+    if (page != null)
+      return Integer.parseInt(page);
+
+    return 1;
+  }
+
+  private int parsePageSizeParam(String pageSize) {
+    if (pageSize != null)
+      return Integer.parseInt(pageSize);
+
+    return 5;
+  }
+
+  private SortDirection parseOrderParam(String order) {
+    switch ((order != null) ? order : "") {
+    case "asc":
+      return SortDirection.ASCENDING;
+    case "desc":
+      return SortDirection.DESCENDING;
+    default:
+      return SortDirection.DESCENDING;
+    }
+  }
+
+  private String parseOrderByParam(String orderBy) {
+    switch ((orderBy != null) ? orderBy : "") {
+    case "createdAt":
+      return "createdAt";
+    case "likes":
+      return "likes";
+    default:
+      return "createdAt";
+    }
   }
 }
