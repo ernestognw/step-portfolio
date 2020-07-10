@@ -23,6 +23,12 @@
   flex-wrap: wrap;
 }
 
+.map {
+  border: none;
+  height: 300px;
+  width: 100%;
+}
+
 .repositories--list {
   display: grid;
   grid-gap: 20px;
