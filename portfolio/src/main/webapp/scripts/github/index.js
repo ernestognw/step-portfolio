@@ -1,5 +1,8 @@
 import { github } from './client.js';
 
+/**
+ * Function to fetch repos data and insert them into the DOM
+ */
 const updateRepos = async ({ page, pageSize: perPage }) => {
   window.loadMoreReposButton.disabled = true;
   window.loadMoreReposButton.classList.add('is-loading');
