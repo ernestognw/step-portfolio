@@ -23,7 +23,11 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
+import com.google.cloud.language.v1.Document;
+import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.gson.Gson;
+import com.google.sps.common.DefaultParams;
+import com.google.sps.common.SentimentScoreBoundaries;
 import com.google.sps.models.Info;
 import com.google.sps.models.Comment;
 import com.google.sps.models.Comments;
@@ -42,6 +46,10 @@ import org.json.simple.parser.ParseException;
 @WebServlet("/comments")
 public class CommentsController extends HttpServlet {
   private final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+
+  private enum Sentiment {
+    Happy, Neutral, Mad
+  };
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -62,9 +70,10 @@ public class CommentsController extends HttpServlet {
       String username = (String) entity.getProperty("username");
       String comment = (String) entity.getProperty("comment");
       long createdAt = (long) entity.getProperty("createdAt");
+      String sentiment = (String) entity.getProperty("sentiment");
       int likes = ((Long) entity.getProperty("likes")).intValue();
 
-      commentsList.add(new Comment(id, username, comment, createdAt, likes));
+      commentsList.add(new Comment(id, username, comment, createdAt, likes, sentiment));
     }
 
     int count = commentsList.size();
@@ -102,19 +111,21 @@ public class CommentsController extends HttpServlet {
     String comment = getAttribute(json, "comment", "...");
     long createdAt = System.currentTimeMillis();
     int likes = 0;
+    Sentiment sentiment = analyzeSentiment(comment);
 
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("username", username);
     commentEntity.setProperty("comment", comment);
     commentEntity.setProperty("createdAt", createdAt);
     commentEntity.setProperty("likes", likes);
+    commentEntity.setProperty("sentiment", sentiment.name());
 
     datastore.put(commentEntity);
 
     long id = commentEntity.getKey().getId();
 
     Gson gson = new Gson();
-    String data = gson.toJson(new Comment(id, username, comment, createdAt, likes));
+    String data = gson.toJson(new Comment(id, username, comment, createdAt, likes, sentiment.name()));
 
     response.getWriter().println(data);
   }
@@ -153,13 +164,15 @@ public class CommentsController extends HttpServlet {
     String username = (String) commentEntity.getProperty("username");
     String comment = (String) commentEntity.getProperty("comment");
     long createdAt = (long) commentEntity.getProperty("createdAt");
+    String sentiment = (String) commentEntity.getProperty("sentiment");
 
     Gson gson = new Gson();
-    String data = gson.toJson(new Comment(commentEntity.getKey().getId(), username, comment, createdAt, likes));
+    String data = gson
+        .toJson(new Comment(commentEntity.getKey().getId(), username, comment, createdAt, likes, sentiment));
 
     response.getWriter().println(data);
   }
-  
+
   @Override
   public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json;");
@@ -218,14 +231,14 @@ public class CommentsController extends HttpServlet {
     if (page != null)
       return Integer.parseInt(page);
 
-    return 1;
+    return DefaultParams.page;
   }
 
   private int parsePageSizeParam(String pageSize) {
     if (pageSize != null)
       return Integer.parseInt(pageSize);
 
-    return 5;
+    return DefaultParams.pageSize;
   }
 
   private SortDirection parseOrderParam(String order) {
@@ -235,7 +248,7 @@ public class CommentsController extends HttpServlet {
     case "desc":
       return SortDirection.DESCENDING;
     default:
-      return SortDirection.DESCENDING;
+      return DefaultParams.order;
     }
   }
 
@@ -246,7 +259,27 @@ public class CommentsController extends HttpServlet {
     case "likes":
       return "likes";
     default:
-      return "createdAt";
+      return DefaultParams.orderBy;
+    }
+  }
+
+  private Sentiment analyzeSentiment(String comment) throws IOException {
+    try (LanguageServiceClient languageService = LanguageServiceClient.create()) {
+      Document document = Document.newBuilder().setContent(comment).setType(Document.Type.PLAIN_TEXT).build();
+
+      double score = (double) languageService.analyzeSentiment(document).getDocumentSentiment().getScore();
+
+      // Scores are set to -1, -0.3, 0.3 and 1
+      // in order to try to split the score spectrum
+      // in the most general way possible
+      // Different approaches could work if they
+      // have enough justification
+      if (score >= SentimentScoreBoundaries.lower && score <= SentimentScoreBoundaries.neutralLow)
+        return Sentiment.Mad;
+      if (score > SentimentScoreBoundaries.neutralLow && score <= SentimentScoreBoundaries.neutralHigh)
+        return Sentiment.Neutral;
+      else
+        return Sentiment.Happy;
     }
   }
 }

@@ -1,9 +1,21 @@
+const getSentimentTagColor = sentiment => {
+  switch (sentiment) {
+    case 'Mad':
+      return 'danger';
+    case 'Happy':
+      return 'success';
+    default:
+      return 'info';
+  }
+};
+
 const getCommentTemplate = (
   id,
   username,
   text,
   createdAt,
-  likes
+  likes,
+  sentiment
 ) => `<article class="media comments--comment" id="${id}-comment">
 <figure class="media-left">
   <p class="image is-64x64">
@@ -14,6 +26,9 @@ const getCommentTemplate = (
   <div class="content">
     <p>
       <strong>${username}</strong>
+      <span class="tag is-light is-${getSentimentTagColor(
+        sentiment
+      )}">${sentiment}</span>
       <small class="ml-1 comments--hidden">
         <a onclick="deleteComment(${id})">
           <span class="icon">
