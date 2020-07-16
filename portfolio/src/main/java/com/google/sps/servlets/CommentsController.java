@@ -26,6 +26,8 @@ import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.cloud.language.v1.Document;
 import com.google.cloud.language.v1.LanguageServiceClient;
 import com.google.gson.Gson;
+import com.google.sps.common.DefaultParams;
+import com.google.sps.common.SentimentScoreBoundaries;
 import com.google.sps.models.Info;
 import com.google.sps.models.Comment;
 import com.google.sps.models.Comments;
@@ -297,14 +299,14 @@ public class CommentsController extends HttpServlet {
     if (page != null)
       return Integer.parseInt(page);
 
-    return 1;
+    return DefaultParams.page;
   }
 
   private int parsePageSizeParam(String pageSize) {
     if (pageSize != null)
       return Integer.parseInt(pageSize);
 
-    return 5;
+    return DefaultParams.pageSize;
   }
 
   /**
@@ -323,7 +325,7 @@ public class CommentsController extends HttpServlet {
     case "desc":
       return SortDirection.DESCENDING;
     default:
-      return SortDirection.DESCENDING;
+      return DefaultParams.order;
     }
   }
 
@@ -343,7 +345,7 @@ public class CommentsController extends HttpServlet {
     case "likes":
       return "likes";
     default:
-      return "createdAt";
+      return DefaultParams.orderBy;
     }
   }
 
@@ -361,9 +363,14 @@ public class CommentsController extends HttpServlet {
 
       double score = (double) languageService.analyzeSentiment(document).getDocumentSentiment().getScore();
 
-      if (score >= -1 && score <= -0.3)
+      // Scores are set to -1, -0.3, 0.3 and 1
+      // in order to try to split the score spectrum
+      // in the most general way possible
+      // Different approaches could work if they
+      // have enough justification
+      if (score >= SentimentScoreBoundaries.lower && score <= SentimentScoreBoundaries.neutralLow)
         return Sentiment.Mad;
-      if (score > -0.3 && score <= 0.3)
+      if (score > SentimentScoreBoundaries.neutralLow && score <= SentimentScoreBoundaries.neutralHigh)
         return Sentiment.Neutral;
       else
         return Sentiment.Happy;
