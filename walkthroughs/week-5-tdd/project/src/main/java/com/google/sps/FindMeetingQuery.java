@@ -29,27 +29,50 @@ public final class FindMeetingQuery {
   /**
    * Find a collection of time ranges suitable to have a meeting
    * 
-   * @param events Collection of events happening during the day
+   * This method is an operation to handle new meeting requests, by receiving the
+   * incoming request, and a list of existing meetings. It resolves the available
+   * slots to have the meeting, returning time slots with the following priority
+   * order:
+   * 
+   * 1. Return slots when every attendee (both mandatory and optional) can attend
+   * 2. Return slots when only mandatory attendees can attend 3. Return empty
+   * collection when the meeting is no suitable
+   * 
+   * ====== Algorithmic analysis ====== 
+   * 
+   * let N = Already scheduled events
+   * let M = Attendees within scheduled events
+   *
+   * Time complexity: N * M since for each event, we do a disjoint in O(M)
+   * Space complexity: max(N, M) since the greatest memory allocation could be
+   * from events or attendees
+   * 
+   * Notes: Usually the largest memory allocation could be both attendeesSchedule
+   * and optionalAttendeesSchedule, but these are considerated constants
+
+   * 
+   * @param events  Collection of events happening during the day
    * @param request Object with the data about the meeting to be scheduled
-   * @return A collection of time ranges available to meet. It prioritizes
-   *    time ranges in which both optional and mandatory attendees can attend.
+   * @return A collection of time ranges available to meet. It prioritizes time
+   *         ranges in which both optional and mandatory attendees can attend.
    */
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Integer[] attendeesSchedule = new Integer[MINUTES_IN_A_DAY];
     Integer[] optionalAttendeesSchedule = new Integer[MINUTES_IN_A_DAY];
-    
+
     // Assume available schedules as default.
     Arrays.fill(attendeesSchedule, AVAILABLE);
     Arrays.fill(optionalAttendeesSchedule, AVAILABLE);
 
     Set<String> mandatoryAttendees = new HashSet<String>(request.getAttendees());
     Set<String> optionalAttendees = new HashSet<String>(request.getOptionalAttendees());
-    
+
     ArrayList<Event> eventsToVerify = new ArrayList<>(events);
     for (Event event : eventsToVerify) {
       // Check if any of the attendees are scheduled for the current event to verify,
       // in order to fill schedules with not available status
       Set<String> eventAttendees = event.getAttendees();
+      // Disjoints run in O(M) according to this: https://stackoverflow.com/questions/61923114/hashset-disjoint-complexity
       Boolean isAnyMandatoryAttendeeBusy = !Collections.disjoint(eventAttendees, mandatoryAttendees);
       Boolean isAnyOptionalAttendeeBusy = !Collections.disjoint(eventAttendees, optionalAttendees);
 
@@ -75,11 +98,10 @@ public final class FindMeetingQuery {
     ArrayList<TimeRange> optionalAttendeesSlots = calculateAvailableRanges(optionalAttendeesSchedule);
     long duration = request.getDuration();
     ArrayList<TimeRange> availableTimeRanges = calculateAvailableSlots(optionalAttendeesSlots, duration);
-    
-    
+
     // If there is no available time range including optional attendees
     // return the available time ranges not including optionals
-    if(availableTimeRanges.size() == 0){
+    if (availableTimeRanges.size() == 0) {
       ArrayList<TimeRange> mandatoryAttendeesSlots = calculateAvailableRanges(attendeesSchedule);
       return calculateAvailableSlots(mandatoryAttendeesSlots, duration);
     } else {
@@ -90,7 +112,8 @@ public final class FindMeetingQuery {
   /**
    * Calculate available time ranges in a minute schedule provided
    * 
-   * @param minutesSchedule An array of minutes in a day, representing those available or not during that day
+   * @param minutesSchedule An array of minutes in a day, representing those
+   *                        available or not during that day
    * @return A list of TimeRange's for the time windows in the minute schedule
    */
   private ArrayList<TimeRange> calculateAvailableRanges(Integer[] minutesSchedule) {
@@ -113,10 +136,10 @@ public final class FindMeetingQuery {
   }
 
   /**
-   * To calculate which time ranges are suitable to have a meeting of
-   * a given duration.
+   * To calculate which time ranges are suitable to have a meeting of a given
+   * duration.
    * 
-   * @param ranges List of candidate time ranges to held the meeting
+   * @param ranges   List of candidate time ranges to held the meeting
    * @param duration Numeric representation of a meeting duration
    * @return The list of time ranges in which the meeting can be held
    */
