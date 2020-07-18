@@ -16,7 +16,6 @@ package com.google.sps;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,21 +27,6 @@ public final class Event {
   private final String title;
   private final TimeRange when;
   private final Set<String> attendees = new HashSet<>();
-  public static final Comparator<Event> ORDER_BY_START = new Comparator<Event>() {
-
-    /**
-     * Makes a comparison between an initival given event and a toCompare event
-     *
-     * @param initial The human-readable name for the event. Must be non-null.
-     * @param toCompare The time when the event takes place. Must be non-null.
-     * 
-     * @return Integer result of the comparison operation
-     */
-    @Override
-    public int compare(Event initial, Event toCompare) {
-      return Integer.compare(initial.when.start(), toCompare.when.start());
-    }
-  };
 
   /**
    * Creates a new event.
